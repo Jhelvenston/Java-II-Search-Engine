@@ -13,13 +13,12 @@ public class SearchEngineProject
         JFrame searchFrame = new JFrame( "Search engine" );
         searchFrame.setSize( 800, 500 );
         searchFrame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-        //GUI components initialized here
         
+        //GUI components instantiated and initialized here
         JLabel titleLabel, termsLabel, indexedLabel;
         JRadioButton allRadio, anyRadio, exactRadio;
         JTextArea resultsArea;
         JTextField searchField;
-        
         titleLabel = new JLabel( "Search Engine" );
         termsLabel = new JLabel( "File Terms" );
         indexedLabel = new JLabel();
@@ -36,25 +35,47 @@ public class SearchEngineProject
         allRadio.setText("Search All File Terms");
         anyRadio.setText("Search Any File Terms");
         exactRadio.setText("Search Exact Phrase");
-
         resultsArea.setColumns(20);
         resultsArea.setRows(5);
-
         searchButton.setText("Search");
         maintenanceButton.setText("Maintenance");
         aboutButton.setText("About");
-
-        searchField.setSize( 800, 500 );
         
-        JPanel top = new JPanel();
-        top.add( titleLabel );
-        searchFrame.add( top, BorderLayout.NORTH );
+        //Top level boxlayout panel is added to stack all other panels
+        JPanel contentPane = new JPanel();
+        contentPane.setLayout( new BoxLayout( contentPane, BoxLayout.Y_AXIS ) );
+        searchFrame.add( contentPane );
         
-        JPanel mid = new JPanel();
-        mid.add( termsLabel );
-        mid.add( searchField );
-        mid.add( searchButton );
-        searchFrame.add( mid, BorderLayout.CENTER  );
+        //five panels are made to store the components
+        JPanel panel1 = new JPanel();
+        panel1.add( titleLabel );
+        contentPane.add(panel1 );
+        
+        JPanel panel2 = new JPanel();
+        panel2.add( termsLabel );
+        panel2.add( searchField );
+        panel2.add( searchButton );
+        contentPane.add(panel2 );
+        
+        JPanel panel3 = new JPanel();
+        panel3.add( allRadio );
+        panel3.add( anyRadio );
+        panel3.add( exactRadio );
+        ButtonGroup radios = new ButtonGroup(); //buttongroup is needed to keep only one radio pushed at a time
+        radios.add( allRadio );
+        radios.add( anyRadio );
+        radios.add( exactRadio );
+        contentPane.add( panel3 );
+        
+        JPanel panel4 = new JPanel();
+        panel4.add( resultsArea );
+        contentPane.add(panel4 );
+        
+        JPanel panel5 = new JPanel();
+        panel5.add( maintenanceButton );
+        panel5.add( aboutButton );
+        contentPane.add(panel5 );
+        
         searchFrame.setVisible( true );
     }
 }
