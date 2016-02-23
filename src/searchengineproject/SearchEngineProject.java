@@ -11,7 +11,9 @@ public class SearchEngineProject
     {
         //Create the frame
         JFrame searchFrame = new JFrame( "Search engine" );
+        JFrame maintenanceFrame = new JFrame( "Maintenance" );
         searchFrame.setSize( 800, 500 );
+        maintenanceFrame.setSize( 800,500 );
         searchFrame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
         
         //GUI components instantiated and initialized here
@@ -76,6 +78,7 @@ public class SearchEngineProject
         panel5.add( aboutButton );
         contentPane.add(panel5 );
         
+        maintenanceFrame.setVisible( true );
         searchFrame.setVisible( true );
     }
 }
