@@ -7,29 +7,23 @@ import java.awt.*;
  */
 public class SearchEngineProject
 {
-        //private JButton searchButton, maintenanceButton, aboutButton;
-        private JLabel titleLabel, termsLabel, indexedLabel;
-        private JRadioButton allRadio, anyRadio, exactRadio;
-        private JTextArea resultsArea;
-        private JTextField searchField;
-        private JPanel top;
-    
     public static void main( String[] args )
     {
         //Create the frame
         JFrame searchFrame = new JFrame( "Search engine" );
-        searchFrame.setSize( 600, 500 );
+        searchFrame.setSize( 800, 500 );
         searchFrame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-        searchFrame.setVisible( true );
-    }
-    
-        public void search()
-    {
         //GUI components initialized here
-        titleLabel = new JLabel( "Search Engine", JLabel.TOP );
-        searchField = new JTextField();
-        termsLabel = new JLabel();
+        
+        JLabel titleLabel, termsLabel, indexedLabel;
+        JRadioButton allRadio, anyRadio, exactRadio;
+        JTextArea resultsArea;
+        JTextField searchField;
+        
+        titleLabel = new JLabel( "Search Engine" );
+        termsLabel = new JLabel( "File Terms" );
         indexedLabel = new JLabel();
+        searchField = new JTextField();
         allRadio = new JRadioButton();
         anyRadio = new JRadioButton();
         exactRadio = new JRadioButton();
@@ -39,7 +33,6 @@ public class SearchEngineProject
         JButton aboutButton = new JButton();
 
         titleLabel.setFont(new java.awt.Font("Tahoma", 0, 36));
-        termsLabel.setText("File Terms");
         allRadio.setText("Search All File Terms");
         anyRadio.setText("Search Any File Terms");
         exactRadio.setText("Search Exact Phrase");
@@ -50,5 +43,18 @@ public class SearchEngineProject
         searchButton.setText("Search");
         maintenanceButton.setText("Maintenance");
         aboutButton.setText("About");
+
+        searchField.setSize( 800, 500 );
+        
+        JPanel top = new JPanel();
+        top.add( titleLabel );
+        searchFrame.add( top, BorderLayout.NORTH );
+        
+        JPanel mid = new JPanel();
+        mid.add( termsLabel );
+        mid.add( searchField );
+        mid.add( searchButton );
+        searchFrame.add( mid, BorderLayout.CENTER  );
+        searchFrame.setVisible( true );
     }
 }
