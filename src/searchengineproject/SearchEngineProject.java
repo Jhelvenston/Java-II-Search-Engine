@@ -82,25 +82,41 @@ public class SearchEngineProject
         //GUI components instantiated and initialized here
         JLabel titleLabel, indexedLabel, versionLabel;
         titleLabel = new JLabel("Index Maintenance");
-        indexedLabel = new JLabel();
+        indexedLabel = new JLabel( "Number of indexed files: " );
         versionLabel = new JLabel();
         JButton addButton = new JButton("Add File");
         JButton removeButton = new JButton("Remove File");
         JButton rebuildButton = new JButton("Rebuild Out-of-date");
         JButton repositionButton = new JButton("Reset Window Position");
+        JPanel contentPane = new JPanel();
+        contentPane.setLayout( new BoxLayout( contentPane, BoxLayout.Y_AXIS ) );
+        
+        titleLabel.setFont(new Font("Tahoma", 0, 36));
+        
+        JPanel panel1 = new JPanel();
+        panel1.add( titleLabel );
+        contentPane.add( panel1 );
         
         String[] columnNames = {"File Name","Status"};
         Object[][] data = {{"Dummy data name", "Dummy data status"}};
         JTable indexTable = new JTable( data, columnNames );
-        
         JScrollPane scrollPane = new JScrollPane( indexTable );
         indexTable.setFillsViewportHeight( true );
-        
-        JPanel contentPane = new JPanel();
-        contentPane.setLayout( new BoxLayout( contentPane, BoxLayout.Y_AXIS ) );
         contentPane.add( scrollPane );
-        maintenanceFrame.add( contentPane );
         
+        JPanel panel2 = new JPanel();
+        panel2.add( addButton );
+        panel2.add( removeButton );
+        panel2.add( rebuildButton );
+        contentPane.add( panel2 );
+        
+        JPanel panel3 = new JPanel();
+        panel3.add( repositionButton );
+        panel3.add( indexedLabel );
+        panel3.add( versionLabel );
+        contentPane.add( panel3 );
+        
+        maintenanceFrame.add( contentPane );
         maintenanceFrame.setVisible( true );
     }
     
