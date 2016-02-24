@@ -16,6 +16,7 @@ public class SearchEngineProject
         //Create the frame
         JFrame searchFrame = new JFrame( "Search engine" );
         searchFrame.setSize( 800, 500 );
+        searchFrame.setLocation( 50, 250 );
         searchFrame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
         
         //GUI components instantiated and initialized here
@@ -27,6 +28,7 @@ public class SearchEngineProject
         termsLabel = new JLabel( "File Terms" );
         indexedLabel = new JLabel();
         searchField = new JTextField();
+        searchField.setPreferredSize( new Dimension( 350, 24 ) );
         allRadio = new JRadioButton( "Search All File Terms" );
         anyRadio = new JRadioButton( "Search Any File Terms" );
         exactRadio = new JRadioButton( "Search Exact Phrase" );
@@ -73,14 +75,13 @@ public class SearchEngineProject
         radios.add( exactRadio );
         contentPane.add( panel3 );
         
-        JPanel panel4 = new JPanel();
-        panel4.add( resultsArea );
-        contentPane.add(panel4 );
+        JScrollPane scrollPane = new JScrollPane( resultsArea );
+        contentPane.add( scrollPane );
         
-        JPanel panel5 = new JPanel();
-        panel5.add( maintenanceButton );
-        panel5.add( aboutButton );
-        contentPane.add(panel5 );
+        JPanel panel4 = new JPanel();
+        panel4.add( maintenanceButton );
+        panel4.add( aboutButton );
+        contentPane.add(panel4 );
         
         searchFrame.setVisible( true );
     }
@@ -90,6 +91,7 @@ public class SearchEngineProject
         //Creating the frame
         JFrame maintenanceFrame = new JFrame( "Maintenance" );
         maintenanceFrame.setSize( 800,500 );
+        maintenanceFrame.setLocation( 1040, 250 );
         windowOpen = true;
         
         //Set boolean to false when window closes
@@ -122,7 +124,14 @@ public class SearchEngineProject
         
         String[] columnNames = {"File Name","Status"};
         Object[][] data = {{"Dummy data name", "Dummy data status"}};
-        JTable indexTable = new JTable( data, columnNames );
+        JTable indexTable = new JTable( data, columnNames )
+        {
+            @Override
+            public boolean isCellEditable( int row, int column )
+            {
+                return false;
+            }
+        };
         JScrollPane scrollPane = new JScrollPane( indexTable );
         indexTable.setFillsViewportHeight( true );
         contentPane.add( scrollPane );
