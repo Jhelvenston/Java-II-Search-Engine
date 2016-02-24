@@ -2,11 +2,15 @@ package searchengineproject;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
 /*
  * Search engine project
  */
 public class SearchEngineProject
 {
+    //Boolean used to track if maintenance window is open or closed
+    private static boolean windowOpen;
+    
     public static void searchFrame()
     {
         //Create the frame
@@ -34,6 +38,13 @@ public class SearchEngineProject
         titleLabel.setFont(new Font("Tahoma", 0, 36));
         resultsArea.setColumns(20);
         resultsArea.setRows(5);
+        
+        //Check to see if window is closed before opening a new one
+        maintenanceButton.addActionListener((ActionEvent ae) -> 
+        {
+            if ( windowOpen == false )
+                maintenanceFrame();
+        } );
         
         //Top level boxlayout panel is added to stack all other panels
         JPanel contentPane = new JPanel();
@@ -78,6 +89,17 @@ public class SearchEngineProject
         //Creating the frame
         JFrame maintenanceFrame = new JFrame( "Maintenance" );
         maintenanceFrame.setSize( 800,500 );
+        windowOpen = true;
+        
+        //Set boolean to false when window closes
+        maintenanceFrame.addWindowListener( new WindowAdapter()
+        {
+            @Override
+            public void windowClosing( WindowEvent we )
+            {
+                windowOpen = false;
+            }
+        } );
         
         //GUI components instantiated and initialized here
         JLabel titleLabel, indexedLabel, versionLabel;
