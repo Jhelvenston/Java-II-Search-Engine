@@ -75,22 +75,31 @@ public class SearchEngineProject
     
     public static void maintenanceFrame()
     {
+        //Creating the frame
         JFrame maintenanceFrame = new JFrame( "Maintenance" );
         maintenanceFrame.setSize( 800,500 );
         
+        //GUI components instantiated and initialized here
+        JLabel titleLabel, indexedLabel, versionLabel;
+        titleLabel = new JLabel("Index Maintenance");
+        indexedLabel = new JLabel();
+        versionLabel = new JLabel();
+        JButton addButton = new JButton("Add File");
+        JButton removeButton = new JButton("Remove File");
+        JButton rebuildButton = new JButton("Rebuild Out-of-date");
+        JButton repositionButton = new JButton("Reset Window Position");
+        
         String[] columnNames = {"File Name","Status"};
         Object[][] data = {{"Dummy data name", "Dummy data status"}};
-        
         JTable indexTable = new JTable( data, columnNames );
         
         JScrollPane scrollPane = new JScrollPane( indexTable );
         indexTable.setFillsViewportHeight( true );
         
-        JPanel contentPane2 = new JPanel();
-        contentPane2.setLayout( new BoxLayout( contentPane2, BoxLayout.Y_AXIS ) );
-        contentPane2.add( scrollPane );
-
-        maintenanceFrame.add( contentPane2 );
+        JPanel contentPane = new JPanel();
+        contentPane.setLayout( new BoxLayout( contentPane, BoxLayout.Y_AXIS ) );
+        contentPane.add( scrollPane );
+        maintenanceFrame.add( contentPane );
         
         maintenanceFrame.setVisible( true );
     }
