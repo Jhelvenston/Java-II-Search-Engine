@@ -25,23 +25,17 @@ public class SearchEngineProject
         termsLabel = new JLabel( "File Terms" );
         indexedLabel = new JLabel();
         searchField = new JTextField();
-        allRadio = new JRadioButton();
-        anyRadio = new JRadioButton();
-        exactRadio = new JRadioButton();
+        allRadio = new JRadioButton( "Search All File Terms" );
+        anyRadio = new JRadioButton( "Search Any File Terms" );
+        exactRadio = new JRadioButton( "Search Exact Phrase" );
         resultsArea = new JTextArea();
-        JButton searchButton = new JButton();
-        JButton maintenanceButton = new JButton();
-        JButton aboutButton = new JButton();
+        JButton searchButton = new JButton( "Search" );
+        JButton maintenanceButton = new JButton( "Maintenance" );
+        JButton aboutButton = new JButton( "About" );
 
         titleLabel.setFont(new java.awt.Font("Tahoma", 0, 36));
-        allRadio.setText("Search All File Terms");
-        anyRadio.setText("Search Any File Terms");
-        exactRadio.setText("Search Exact Phrase");
         resultsArea.setColumns(20);
         resultsArea.setRows(5);
-        searchButton.setText("Search");
-        maintenanceButton.setText("Maintenance");
-        aboutButton.setText("About");
         
         //Top level boxlayout panel is added to stack all other panels
         JPanel contentPane = new JPanel();
