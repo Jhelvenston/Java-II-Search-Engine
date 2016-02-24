@@ -7,13 +7,11 @@ import java.awt.*;
  */
 public class SearchEngineProject
 {
-    public static void main( String[] args )
+    public static void searchFrame()
     {
         //Create the frame
         JFrame searchFrame = new JFrame( "Search engine" );
-        JFrame maintenanceFrame = new JFrame( "Maintenance" );
         searchFrame.setSize( 800, 500 );
-        maintenanceFrame.setSize( 800,500 );
         searchFrame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
         
         //GUI components instantiated and initialized here
@@ -36,21 +34,6 @@ public class SearchEngineProject
         titleLabel.setFont(new Font("Tahoma", 0, 36));
         resultsArea.setColumns(20);
         resultsArea.setRows(5);
-        
-        //Objects for maintenance frame instantiated, initialized, and added here
-        String[] columnNames = {"File Name","Status"};
-        Object[][] data = {{"Dummy data name", "Dummy data status"}};
-        
-        JTable indexTable = new JTable( data, columnNames );
-        
-        JScrollPane scrollPane = new JScrollPane( indexTable );
-        indexTable.setFillsViewportHeight( true );
-        
-        JPanel contentPane2 = new JPanel();
-        contentPane2.setLayout( new BoxLayout( contentPane2, BoxLayout.Y_AXIS ) );
-        contentPane2.add( scrollPane );
-
-        maintenanceFrame.add( contentPane2 );
         
         //Top level boxlayout panel is added to stack all other panels
         JPanel contentPane = new JPanel();
@@ -87,7 +70,34 @@ public class SearchEngineProject
         panel5.add( aboutButton );
         contentPane.add(panel5 );
         
-        maintenanceFrame.setVisible( true );
         searchFrame.setVisible( true );
+    }
+    
+    public static void maintenanceFrame()
+    {
+        JFrame maintenanceFrame = new JFrame( "Maintenance" );
+        maintenanceFrame.setSize( 800,500 );
+        
+        String[] columnNames = {"File Name","Status"};
+        Object[][] data = {{"Dummy data name", "Dummy data status"}};
+        
+        JTable indexTable = new JTable( data, columnNames );
+        
+        JScrollPane scrollPane = new JScrollPane( indexTable );
+        indexTable.setFillsViewportHeight( true );
+        
+        JPanel contentPane2 = new JPanel();
+        contentPane2.setLayout( new BoxLayout( contentPane2, BoxLayout.Y_AXIS ) );
+        contentPane2.add( scrollPane );
+
+        maintenanceFrame.add( contentPane2 );
+        
+        maintenanceFrame.setVisible( true );
+    }
+    
+    public static void main( String[] args )
+    {
+        maintenanceFrame();
+        searchFrame();
     }
 }
