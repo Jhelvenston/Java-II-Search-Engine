@@ -31,6 +31,7 @@ public class SearchEngineProject
         anyRadio = new JRadioButton( "Search Any File Terms" );
         exactRadio = new JRadioButton( "Search Exact Phrase" );
         resultsArea = new JTextArea();
+        resultsArea.setEnabled(false);
         JButton searchButton = new JButton( "Search" );
         JButton maintenanceButton = new JButton( "Maintenance" );
         JButton aboutButton = new JButton( "About" );
