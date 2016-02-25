@@ -78,6 +78,7 @@ public class SearchEngineProject
         JPanel panel2 = new JPanel();
         panel2.add( termsLabel );
         panel2.add( searchField );
+        searchField.setPreferredSize(new Dimension(200,28)); // set size of search field
         panel2.add( searchButton );
         contentPane.add(panel2 );
         
