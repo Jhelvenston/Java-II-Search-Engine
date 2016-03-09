@@ -4,6 +4,7 @@ import javax.swing.*;
 import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.*;
 /*
  * Search engine project
  *
@@ -158,28 +159,31 @@ public class SearchEngineProject
         
         tableMod.addColumn( "File Name" );
         tableMod.addColumn( "Status" );
-        tableMod.addRow( new Object[] { "Dummy data name", "Dummy data status" } );
         
         
         JScrollPane scrollPane = new JScrollPane( indexTable );
         indexTable.setFillsViewportHeight( true );
         contentPane.add( scrollPane );
         
-        addButton.addActionListener((ActionEvent ae) -> 
+        addButton.addActionListener((ActionEvent ae) ->
         {
-                String newItem = addToIndex();
-                tableMod.addRow( new Object[] { "Dummy data name", "Dummy data status" } );
-        } );
+            //call method to get file name and add it to table
+            String newItem = addToIndex( maintenanceFrame );
+            if ( !newItem.isEmpty() )
+            {
+                tableMod.addRow( new Object[] { newItem, "Dummy data status" } );
+            }
+        });
         
-        removeButton.addActionListener((ActionEvent ae) -> 
+        removeButton.addActionListener((ActionEvent ae) ->
         {
-                removeFromIndex( tableMod );
-        } );
+            removeFromIndex( tableMod );
+        });
         
-        rebuildButton.addActionListener((ActionEvent ae) -> 
+        rebuildButton.addActionListener((ActionEvent ae) ->
         {
-                rebuild();
-        } );
+            rebuild();
+        });
         
         JPanel panel2 = new JPanel();
         panel2.add( addButton );
@@ -211,11 +215,32 @@ public class SearchEngineProject
         return results;
     }
     
-    public static String addToIndex()
+    public static String addToIndex( JFrame parent )
     {
-        //Returns dummy data, adding items to index will replace this later
-        String indexItem = "Dummy index data";
-        return indexItem;
+        //Open a file chooser to return a file's path name
+        JFileChooser indexChooser = new JFileChooser();
+        int choice = indexChooser.showOpenDialog( parent );
+        String filename;
+
+        if ( choice == JFileChooser.APPROVE_OPTION )
+        {
+            File file = indexChooser.getSelectedFile();
+            filename = file.getAbsolutePath();
+            String indexItem = filename;
+            
+            //Only return filename if a file is selected and valid
+            if ( file.isFile() )
+            {
+                return indexItem;
+            }
+            else
+            {
+                JOptionPane.showMessageDialog( parent , "Invalid file", "Error", JOptionPane.WARNING_MESSAGE );
+            }
+        }
+        
+        //Return an empty string if nothing is selected, or the file is invalid
+        return "";
     }
     
     public static void removeFromIndex( DefaultTableModel table )
