@@ -177,6 +177,7 @@ public class SearchEngineProject
             String newItem = addToIndex( maintenanceFrame );
             if ( !newItem.isEmpty() )
             {
+                //Program should check for status updates later
                 tableMod.addRow( new Object[] { newItem, "Dummy data status" } );
                 writeFile();
                 indexNum++;
@@ -186,6 +187,7 @@ public class SearchEngineProject
         
         removeButton.addActionListener((ActionEvent ae) ->
         {
+            //Remove a row from the index
             if ( indexNum > 0 )
             {
                 removeFromIndex( tableMod );
@@ -266,6 +268,7 @@ public class SearchEngineProject
     
     public static void removeFromIndex( DefaultTableModel table )
     {
+        //Removes a row. Only removes the last row added, this should be changed to remove selected rows
         table.removeRow( indexNum - 1 );
         indexNum--;
         indexData[indexNum] = "";
@@ -274,7 +277,6 @@ public class SearchEngineProject
     
     public static void rebuild()
     {
-        
     }
     
     public static void writeFile()
@@ -299,6 +301,7 @@ public class SearchEngineProject
     
     public static void readFile( DefaultTableModel table )
     {
+        //Reads in the data from the saved file
         try ( BufferedReader br = new BufferedReader( new FileReader( "Index.txt" ) ) )
         {
             String line;
@@ -324,6 +327,7 @@ public class SearchEngineProject
     
     public static void updateLabel( JLabel label )
     {
+        //used to keep track of the number of indexed items
         label.setText( "Number of indexed files: " + indexNum );
     }
     
