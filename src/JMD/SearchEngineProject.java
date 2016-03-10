@@ -14,6 +14,8 @@ public class SearchEngineProject
 {
     //Boolean used to track if maintenance window is open or closed
     private static boolean windowOpen;
+    private static int indexNum = 0;
+    private static String[] indexData = new String[100];
     private static JFrame searchFrame = new JFrame( "Search engine" );
     private static JFrame maintenanceFrame = new JFrame( "Maintenance" );
     
@@ -145,8 +147,6 @@ public class SearchEngineProject
         panel1.add( titleLabel );
         contentPane.add( panel1 );
         
-        Object[][] data = {{"Dummy data name", "Dummy data status"}};
-        
         DefaultTableModel tableMod = new DefaultTableModel();
         JTable indexTable = new JTable( tableMod )
         {
@@ -172,6 +172,9 @@ public class SearchEngineProject
             if ( !newItem.isEmpty() )
             {
                 tableMod.addRow( new Object[] { newItem, "Dummy data status" } );
+                writeFile( indexData );
+                indexNum++;
+                indexedLabel.setText( "Number of indexed files: " + indexNum );
             }
         });
         
@@ -221,16 +224,19 @@ public class SearchEngineProject
         JFileChooser indexChooser = new JFileChooser();
         int choice = indexChooser.showOpenDialog( parent );
         String filename;
+        long lastMod;
 
         if ( choice == JFileChooser.APPROVE_OPTION )
         {
             File file = indexChooser.getSelectedFile();
             filename = file.getAbsolutePath();
+            lastMod = file.lastModified();
             String indexItem = filename;
             
             //Only return filename if a file is selected and valid
             if ( file.isFile() )
             {
+                indexData[indexNum] = filename + " " + lastMod;
                 return indexItem;
             }
             else
@@ -253,6 +259,21 @@ public class SearchEngineProject
         
     }
     
+    public static void writeFile( String[] data )
+    {
+        //Attempt to write the contents of the index to a file to save between runs
+        try (FileWriter fw = new FileWriter( "Index.txt" ); BufferedWriter bw = new BufferedWriter(fw)) {
+            for( int i=0; i<=indexNum; ++i )
+            {
+                bw.write( data[i] );
+                bw.newLine();
+            }
+        }
+        catch( IOException ex )
+        {
+            System.err.println( ex );
+        }
+    }
     public static void main( String[] args )
     {
         maintenanceFrame();
