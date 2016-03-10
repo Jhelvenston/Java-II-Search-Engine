@@ -12,10 +12,16 @@ import java.io.*;
  */
 public class SearchEngineProject
 {
+    private static final int ASIZE = 100;
+    
     //Boolean used to track if maintenance window is open or closed
     private static boolean windowOpen;
     private static int indexNum = 0;
-    private static String[] indexData = new String[100];
+    
+    //These arrays should be converted to lists with an unfixed size
+    private static String[] indexData = new String[ASIZE];
+    private static long[] modData = new long[ASIZE];
+    
     private static JFrame searchFrame = new JFrame( "Search engine" );
     private static JFrame maintenanceFrame = new JFrame( "Maintenance" );
     
@@ -126,7 +132,7 @@ public class SearchEngineProject
         //GUI components instantiated and initialized here
         JLabel titleLabel, indexedLabel, versionLabel;
         titleLabel = new JLabel("Index Maintenance");
-        indexedLabel = new JLabel( "Number of indexed files: " );
+        indexedLabel = new JLabel();
         versionLabel = new JLabel();
         JButton addButton = new JButton("Add File");
         JButton removeButton = new JButton("Remove File");
@@ -172,15 +178,20 @@ public class SearchEngineProject
             if ( !newItem.isEmpty() )
             {
                 tableMod.addRow( new Object[] { newItem, "Dummy data status" } );
-                writeFile( indexData );
+                writeFile();
                 indexNum++;
-                indexedLabel.setText( "Number of indexed files: " + indexNum );
+                updateLabel( indexedLabel );
             }
         });
         
         removeButton.addActionListener((ActionEvent ae) ->
         {
-            removeFromIndex( tableMod );
+            if ( indexNum > 0 )
+            {
+                removeFromIndex( tableMod );
+                updateLabel( indexedLabel );
+                writeFile();
+            }
         });
         
         rebuildButton.addActionListener((ActionEvent ae) ->
@@ -202,6 +213,10 @@ public class SearchEngineProject
         
         maintenanceFrame.add( contentPane );
         maintenanceFrame.setVisible( true );
+        
+        readFile( tableMod );
+        
+        updateLabel( indexedLabel );
     }
     
     public static void resetWindows()
@@ -236,7 +251,7 @@ public class SearchEngineProject
             //Only return filename if a file is selected and valid
             if ( file.isFile() )
             {
-                indexData[indexNum] = filename + " " + lastMod;
+                indexData[indexNum] = filename + " ; " + lastMod;
                 return indexItem;
             }
             else
@@ -251,7 +266,10 @@ public class SearchEngineProject
     
     public static void removeFromIndex( DefaultTableModel table )
     {
-
+        table.removeRow( indexNum - 1 );
+        indexNum--;
+        indexData[indexNum] = "";
+        modData[indexNum] = 0;
     }
     
     public static void rebuild()
@@ -259,14 +277,18 @@ public class SearchEngineProject
         
     }
     
-    public static void writeFile( String[] data )
+    public static void writeFile()
     {
         //Attempt to write the contents of the index to a file to save between runs
-        try (FileWriter fw = new FileWriter( "Index.txt" ); BufferedWriter bw = new BufferedWriter(fw)) {
-            for( int i=0; i<=indexNum; ++i )
+        try ( FileWriter fw = new FileWriter( "Index.txt" ); BufferedWriter bw = new BufferedWriter( fw ) )
+        {
+            for( int i = 0; i <= indexNum; ++i )
             {
-                bw.write( data[i] );
-                bw.newLine();
+                if( !indexData[i].isEmpty() )
+                {
+                    bw.append( indexData[i] + " ; " + modData[i] );
+                    bw.newLine();
+                }
             }
         }
         catch( IOException ex )
@@ -274,6 +296,37 @@ public class SearchEngineProject
             System.err.println( ex );
         }
     }
+    
+    public static void readFile( DefaultTableModel table )
+    {
+        try ( BufferedReader br = new BufferedReader( new FileReader( "Index.txt" ) ) )
+        {
+            String line;
+            while( ( line = br.readLine() ) != null )
+            {
+                String[] load = line.split( " ; " );
+                indexData[indexNum] = load[0];
+                modData[indexNum] = Long.valueOf( load[1] );
+                
+                indexNum++;
+            }
+            
+            for( int i = 0; i < indexNum; ++i )
+            {
+                table.addRow( new Object[] { indexData[i], "Lookin' good" } );
+            }
+        }
+        catch( IOException ex )
+        {
+            System.err.println( ex );
+        }
+    }
+    
+    public static void updateLabel( JLabel label )
+    {
+        label.setText( "Number of indexed files: " + indexNum );
+    }
+    
     public static void main( String[] args )
     {
         maintenanceFrame();
