@@ -5,6 +5,8 @@ import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.util.*;
+
 /*
  * Search engine project
  *
@@ -12,15 +14,18 @@ import java.io.*;
  */
 public class SearchEngineProject
 {
-    private static final int ASIZE = 100;
+    //private static final int ASIZE = 100;
     
     //Boolean used to track if maintenance window is open or closed
     private static boolean windowOpen;
     private static int indexNum = 0;
     
     //These arrays should be converted to lists with an unfixed size
-    private static String[] indexData = new String[ASIZE];
-    private static long[] modData = new long[ASIZE];
+    //private static String[] indexData = new String[ASIZE];
+    //private static long[] modData = new long[ASIZE];
+    
+    private static ArrayList<String> indexData = new ArrayList<String>();
+    private static ArrayList<Long> modData = new ArrayList<Long>();
     
     private static JFrame searchFrame = new JFrame( "Search engine" );
     private static JFrame maintenanceFrame = new JFrame( "Maintenance" );
@@ -253,8 +258,10 @@ public class SearchEngineProject
             //Only return filename if a file is selected and valid
             if ( file.isFile() )
             {
-                indexData[indexNum] = filename + " ; " + lastMod;
+                //Changed to adjust for arraylist
+                indexData.add(filename + " ; " + lastMod);
                 return indexItem;
+                
             }
             else
             {
@@ -271,8 +278,9 @@ public class SearchEngineProject
         //Removes a row. Only removes the last row added, this should be changed to remove selected rows
         table.removeRow( indexNum - 1 );
         indexNum--;
-        indexData[indexNum] = "";
-        modData[indexNum] = 0;
+        //Changed to adjust for arraylist
+        indexData.remove(indexNum);
+        modData.remove(indexNum);
     }
     
     public static void rebuild()
@@ -286,9 +294,11 @@ public class SearchEngineProject
         {
             for( int i = 0; i <= indexNum; ++i )
             {
-                if( !indexData[i].isEmpty() )
+                //Changed to adjust for arraylist
+                boolean check = indexData.isEmpty();
+                if( check )
                 {
-                    bw.append( indexData[i] + " ; " + modData[i] );
+                    bw.append( indexData.get(i) + " ; " + modData.get(i) );
                     bw.newLine();
                 }
             }
@@ -308,15 +318,15 @@ public class SearchEngineProject
             while( ( line = br.readLine() ) != null )
             {
                 String[] load = line.split( " ; " );
-                indexData[indexNum] = load[0];
-                modData[indexNum] = Long.valueOf( load[1] );
+                indexData.set(indexNum, load[0]);
+                modData.set(indexNum, Long.valueOf( load[1] ));
                 
                 indexNum++;
             }
             
             for( int i = 0; i < indexNum; ++i )
             {
-                table.addRow( new Object[] { indexData[i], "Lookin' good" } );
+                table.addRow( new Object[] { indexData.get(i), "Lookin' good" } );
             }
         }
         catch( IOException ex )
