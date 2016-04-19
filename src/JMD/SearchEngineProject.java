@@ -14,18 +14,23 @@ import java.util.*;
  */
 public class SearchEngineProject
 {
-    //private static final int ASIZE = 100;
+    private static final int ASIZE = 100;
     
     //Boolean used to track if maintenance window is open or closed
     private static boolean windowOpen;
     private static int indexNum = 0;
     
     //These arrays should be converted to lists with an unfixed size
-    //private static String[] indexData = new String[ASIZE];
-    //private static long[] modData = new long[ASIZE];
+    private static String[] indexData = new String[ASIZE];
+    private static long[] modData = new long[ASIZE];
+    private static String[] fileContent = new String[ASIZE];
     
-    private static ArrayList<String> indexData = new ArrayList<String>();
-    private static ArrayList<Long> modData = new ArrayList<Long>();
+    //Map used to contain the search string the user inputs
+    private static Map<String, ArrayList> invertIndex = new HashMap<>();
+    private static ArrayList<Integer> mapInts = new ArrayList<>();
+    
+    //private static ArrayList<String> indexData = new ArrayList<String>();
+    //private static ArrayList<Long> modData = new ArrayList<Long>();
     
     private static JFrame searchFrame = new JFrame( "Search engine" );
     private static JFrame maintenanceFrame = new JFrame( "Maintenance" );
@@ -236,13 +241,14 @@ public class SearchEngineProject
     public static String search( String searchText )
     {
         //Returns dummy data, searching will replace this later
-        String results = "Dummy search results";
+        //String results = "Dummy search results";
+        StringBuilder sb = new StringBuilder();
         
-        //Map used to contain the search string the user inputs
-        Map searchTerms = new HashMap();
-        
-        //Stringbuilder needs to be implented to separate the words used,
-        //though I'm not too positive about this one, need to think more on it
+        //strip out all non-alphanumeric characters from the text entered and set it to lowercase
+        searchText = searchText.replaceAll("[^a-zA-Z0-9 ]","");
+        searchText = searchText.toLowerCase();
+        //split it individual words, separated by spaces, and put each word into an array
+        String[] keys = searchText.split( " " );
         
         //Selection statement used to determine which radio was pushed
         
@@ -252,8 +258,33 @@ public class SearchEngineProject
         //Some kind of loop needs to be used to cycle through the array
         //containing each file pulled from the index, and if found, shown
         //in the text area on the seach frame
+        for( int i = 0; i < keys.length; ++i )
+        {
+            /*            String[] test = fileContent[i].split( " " );
+            for(int j = 0; j < test.length; ++j)
+            {
+            if ( keys[i].equals(test[j]) )
+            {
+            //searchTerms.put( keys[i], test[j] );
+            sb.append( indexData[i] + " " + test[j] );
+            //sb.append( System.getProperty( "line.separator" ) );
+            }
+            }*/
+            
+            if ( invertIndex.containsKey( keys[i] ) )
+            {
+                for( int j = 0; j < mapInts.size(); ++j )
+                {
+                    //this should pull the appropriate index number pointing to a certain filename
+                    //but it is currently broken
+                    ArrayList<Integer> intList = invertIndex.get( keys );
+                    int find = intList.get( j );
+                    sb.append( indexData[ find ] );
+                }
+            }
+        }
         
-        return results;
+        return sb.toString();
     }
     
     public static String addToIndex( JFrame parent )
@@ -275,7 +306,7 @@ public class SearchEngineProject
             if ( file.isFile() )
             {
                 //Changed to adjust for arraylist
-                indexData.add(filename + " ; " + lastMod);
+                indexData[indexNum] = filename + " ; " + lastMod;
                 return indexItem;
                 
             }
@@ -294,9 +325,12 @@ public class SearchEngineProject
         //Removes a row. Only removes the last row added, this should be changed to remove selected rows
         table.removeRow( indexNum - 1 );
         indexNum--;
+        indexData[indexNum] = "";
+        modData[indexNum] = 0;
+        manageFileContent();
         //Changed to adjust for arraylist
-        indexData.remove(indexNum);
-        modData.remove(indexNum);
+        //indexData.remove(indexNum);
+        //modData.remove(indexNum);
     }
     
     public static void rebuild()
@@ -311,10 +345,10 @@ public class SearchEngineProject
             for( int i = 0; i <= indexNum; ++i )
             {
                 //Changed to adjust for arraylist
-                boolean check = indexData.isEmpty();
-                if( check )
+                //boolean check = indexData.isEmpty();
+                if( !indexData[i].isEmpty() )
                 {
-                    bw.append( indexData.get(i) + " ; " + modData.get(i) );
+                    bw.append( indexData[i] + " ; " + modData[i] );
                     bw.newLine();
                 }
             }
@@ -323,6 +357,7 @@ public class SearchEngineProject
         {
             System.err.println( ex );
         }
+        manageFileContent();
     }
     
     public static void readFile( DefaultTableModel table )
@@ -334,27 +369,56 @@ public class SearchEngineProject
             while( ( line = br.readLine() ) != null )
             {
                 String[] load = line.split( " ; " );
-                indexData.set(indexNum, load[0]);
-                modData.set(indexNum, Long.valueOf( load[1] ));
+                indexData[indexNum] = load[0];
+                modData[indexNum] = Long.valueOf( load[1] );
                 
                 indexNum++;
             }
             
             for( int i = 0; i < indexNum; ++i )
             {
-                table.addRow( new Object[] { indexData.get(i), "Lookin' good" } );
+                table.addRow( new Object[] { indexData[i], "Lookin' good" } );
             }
         }
         catch( IOException ex )
         {
             System.err.println( ex );
         }
+        manageFileContent();
     }
     
     public static void updateLabel( JLabel label )
     {
         //used to keep track of the number of indexed items
         label.setText( "Number of indexed files: " + indexNum );
+    }
+    
+    public static void manageFileContent()
+    {
+        for( int i = 0; i < indexNum; ++i )
+        {
+            try ( BufferedReader br = new BufferedReader( new FileReader( indexData[i] ) ) )
+            {
+                String line;
+                while( ( line = br.readLine() ) != null )
+                {
+                    //remove non-alphanumeric characters, set to lowercase, remove duplicates
+                    line = line.replaceAll("[^a-zA-Z0-9 ]","");
+                    line = line.toLowerCase();
+                    String[] stringArray = line.split( " " );
+                    
+                    for( int j = 0; j < stringArray.length; ++j )
+                    {
+                        mapInts.add(j);
+                        invertIndex.put( stringArray[j], mapInts );
+                    }
+                }
+            }
+            catch( IOException ex )
+            {
+                System.err.println( ex );
+            }
+        }
     }
     
     public static void main( String[] args )
