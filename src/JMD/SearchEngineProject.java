@@ -237,6 +237,22 @@ public class SearchEngineProject
     {
         //Returns dummy data, searching will replace this later
         String results = "Dummy search results";
+        
+        //Map used to contain the search string the user inputs
+        Map searchTerms = new HashMap();
+        
+        //Stringbuilder needs to be implented to separate the words used,
+        //though I'm not too positive about this one, need to think more on it
+        
+        //Selection statement used to determine which radio was pushed
+        
+        //Once the radio button is determined, one of the three search types
+        //is performed
+        
+        //Some kind of loop needs to be used to cycle through the array
+        //containing each file pulled from the index, and if found, shown
+        //in the text area on the seach frame
+        
         return results;
     }
     
