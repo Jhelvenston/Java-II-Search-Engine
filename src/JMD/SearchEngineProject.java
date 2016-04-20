@@ -27,7 +27,6 @@ public class SearchEngineProject
     
     //Map used to contain the search string the user inputs
     private static Map<String, ArrayList> invertIndex = new HashMap<>();
-    private static ArrayList<Integer> mapInts = new ArrayList<>();
     
     //private static ArrayList<String> indexData = new ArrayList<String>();
     //private static ArrayList<Long> modData = new ArrayList<Long>();
@@ -192,6 +191,7 @@ public class SearchEngineProject
                 writeFile();
                 indexNum++;
                 updateLabel( indexedLabel );
+                manageFileContent();
             }
         });
         
@@ -240,9 +240,8 @@ public class SearchEngineProject
     
     public static String search( String searchText )
     {
-        //Returns dummy data, searching will replace this later
-        //String results = "Dummy search results";
         StringBuilder sb = new StringBuilder();
+        HashSet<String> removeDoubles = new HashSet();
         
         //strip out all non-alphanumeric characters from the text entered and set it to lowercase
         searchText = searchText.replaceAll("[^a-zA-Z0-9 ]","");
@@ -258,30 +257,27 @@ public class SearchEngineProject
         //Some kind of loop needs to be used to cycle through the array
         //containing each file pulled from the index, and if found, shown
         //in the text area on the seach frame
-        for( int i = 0; i < keys.length; ++i )
+        for( int i = 0; i < keys.length; ++i ) //this loop will run through each word in the array, testing it against the invertIndex keys
         {
-            /*            String[] test = fileContent[i].split( " " );
-            for(int j = 0; j < test.length; ++j)
-            {
-            if ( keys[i].equals(test[j]) )
-            {
-            //searchTerms.put( keys[i], test[j] );
-            sb.append( indexData[i] + " " + test[j] );
-            //sb.append( System.getProperty( "line.separator" ) );
-            }
-            }*/
-            
             if ( invertIndex.containsKey( keys[i] ) )
             {
-                for( int j = 0; j < mapInts.size(); ++j )
+                ArrayList<Integer> intList = invertIndex.get( keys[i] );
+                
+                for( int j = 0; j < intList.size(); ++j )
                 {
                     //this should pull the appropriate index number pointing to a certain filename
-                    //but it is currently broken
-                    ArrayList<Integer> intList = invertIndex.get( keys );
                     int find = intList.get( j );
-                    sb.append( indexData[ find ] );
+                    removeDoubles.add(indexData[ find ]);
                 }
             }
+        }
+        
+        String[] reDubArray = new String[removeDoubles.size()];
+        removeDoubles.toArray( reDubArray );
+        
+        for( int i = 0; i < removeDoubles.size(); ++i )
+        {
+            sb.append( reDubArray[i] + System.getProperty( "line.separator" ) );
         }
         
         return sb.toString();
@@ -306,9 +302,8 @@ public class SearchEngineProject
             if ( file.isFile() )
             {
                 //Changed to adjust for arraylist
-                indexData[indexNum] = filename + " ; " + lastMod;
+                indexData[indexNum] = filename; // + " ; " + lastMod;
                 return indexItem;
-                
             }
             else
             {
@@ -379,12 +374,12 @@ public class SearchEngineProject
             {
                 table.addRow( new Object[] { indexData[i], "Lookin' good" } );
             }
+            manageFileContent();
         }
         catch( IOException ex )
         {
             System.err.println( ex );
         }
-        manageFileContent();
     }
     
     public static void updateLabel( JLabel label )
@@ -395,21 +390,29 @@ public class SearchEngineProject
     
     public static void manageFileContent()
     {
-        for( int i = 0; i < indexNum; ++i )
+        invertIndex.clear();
+        for( int i = 0; i < indexNum; ++i ) //"i" will track which file is currently being read from
         {
             try ( BufferedReader br = new BufferedReader( new FileReader( indexData[i] ) ) )
             {
+                System.out.println( indexData[i] );
                 String line;
                 while( ( line = br.readLine() ) != null )
                 {
-                    //remove non-alphanumeric characters, set to lowercase, remove duplicates
+                    //remove non-alphanumeric characters, set to lowercase
                     line = line.replaceAll("[^a-zA-Z0-9 ]","");
                     line = line.toLowerCase();
                     String[] stringArray = line.split( " " );
                     
-                    for( int j = 0; j < stringArray.length; ++j )
+                    for( int j = 0; j < stringArray.length; ++j ) //"j" will track the position of the word being read
                     {
-                        mapInts.add(j);
+                        //int[] intArray = new int[ stringArray.length ];
+                        ArrayList<Integer> mapInts = new ArrayList<>();
+                        if( invertIndex.containsKey( stringArray[j] ) && !mapInts.equals( invertIndex.get( stringArray[j] ) ) )
+                        {
+                            mapInts.addAll( invertIndex.get( stringArray[j] ) );
+                        }
+                        mapInts.add( i );
                         invertIndex.put( stringArray[j], mapInts );
                     }
                 }
@@ -419,6 +422,7 @@ public class SearchEngineProject
                 System.err.println( ex );
             }
         }
+        System.out.println( invertIndex );
     }
     
     public static void main( String[] args )
