@@ -14,22 +14,18 @@ import java.util.*;
  */
 public class SearchEngineProject
 {
-    private static final int ASIZE = 100;
     
     //Boolean used to track if maintenance window is open or closed
     private static boolean windowOpen;
     private static int indexNum = 0;
-    
-    //These arrays should be converted to lists with an unfixed size
-    private static String[] indexData = new String[ASIZE];
-    private static long[] modData = new long[ASIZE];
-    private static String[] fileContent = new String[ASIZE];
+  
     
     //Map used to contain the search string the user inputs
     private static Map<String, ArrayList> invertIndex = new HashMap<>();
     
-    //private static ArrayList<String> indexData = new ArrayList<String>();
-    //private static ArrayList<Long> modData = new ArrayList<Long>();
+    private static ArrayList<String> indexData = new ArrayList<String>();
+    private static ArrayList modData = new ArrayList();
+    private static ArrayList<String> fileContent = new ArrayList<String>();
     
     private static JFrame searchFrame = new JFrame( "Search engine" );
     private static JFrame maintenanceFrame = new JFrame( "Maintenance" );
@@ -267,7 +263,7 @@ public class SearchEngineProject
                 {
                     //this should pull the appropriate index number pointing to a certain filename
                     int find = intList.get( j );
-                    removeDoubles.add(indexData[ find ]);
+                    removeDoubles.add(indexData.get(find));
                 }
             }
         }
@@ -302,7 +298,7 @@ public class SearchEngineProject
             if ( file.isFile() )
             {
                 //Changed to adjust for arraylist
-                indexData[indexNum] = filename; // + " ; " + lastMod;
+                indexData.add(indexNum,filename); // + " ; " + lastMod;
                 return indexItem;
             }
             else
@@ -320,8 +316,8 @@ public class SearchEngineProject
         //Removes a row. Only removes the last row added, this should be changed to remove selected rows
         table.removeRow( indexNum - 1 );
         indexNum--;
-        indexData[indexNum] = "";
-        modData[indexNum] = 0;
+        indexData.add(indexNum,"");
+        modData.add(indexNum, 0);
         manageFileContent();
         //Changed to adjust for arraylist
         //indexData.remove(indexNum);
@@ -341,9 +337,9 @@ public class SearchEngineProject
             {
                 //Changed to adjust for arraylist
                 //boolean check = indexData.isEmpty();
-                if( !indexData[i].isEmpty() )
+                if( !indexData.get(i).isEmpty() )
                 {
-                    bw.append( indexData[i] + " ; " + modData[i] );
+                    bw.append( indexData.get(i) + " ; " + modData.get(i) );
                     bw.newLine();
                 }
             }
@@ -364,15 +360,15 @@ public class SearchEngineProject
             while( ( line = br.readLine() ) != null )
             {
                 String[] load = line.split( " ; " );
-                indexData[indexNum] = load[0];
-                modData[indexNum] = Long.valueOf( load[1] );
+                indexData.add(indexNum,load[0]);
+                modData.add(indexNum,Long.valueOf( load[1] ));
                 
                 indexNum++;
             }
             
             for( int i = 0; i < indexNum; ++i )
             {
-                table.addRow( new Object[] { indexData[i], "Lookin' good" } );
+                table.addRow( new Object[] { indexData.get(i), "Lookin' good" } );
             }
             manageFileContent();
         }
@@ -393,9 +389,9 @@ public class SearchEngineProject
         invertIndex.clear();
         for( int i = 0; i < indexNum; ++i ) //"i" will track which file is currently being read from
         {
-            try ( BufferedReader br = new BufferedReader( new FileReader( indexData[i] ) ) )
+            try ( BufferedReader br = new BufferedReader( new FileReader( indexData.get(i) ) ) )
             {
-                System.out.println( indexData[i] );
+                System.out.println( indexData.get(i) );
                 String line;
                 while( ( line = br.readLine() ) != null )
                 {
