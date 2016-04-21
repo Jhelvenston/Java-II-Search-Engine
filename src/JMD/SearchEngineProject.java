@@ -6,6 +6,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
+import java.util.function.*;
 
 /*
  * Search engine project
@@ -79,7 +80,16 @@ public class SearchEngineProject
         
         searchButton.addActionListener((ActionEvent ae) -> 
         {
-            String searchResults = search( searchField.getText() );
+            String searchType = "";
+            if ( allRadio.isSelected() )
+            {
+                searchType = "ALL";
+            } else
+            {
+                searchType = "ANY";
+            }
+                
+            String searchResults = search( searchField.getText(), searchType );
             resultsArea.setText( searchResults );
         } );
         
@@ -107,6 +117,7 @@ public class SearchEngineProject
         radios.add( allRadio );
         radios.add( anyRadio );
         radios.add( exactRadio );
+        allRadio.setSelected( true );
         contentPane.add( panel3 );
         
         JScrollPane scrollPane = new JScrollPane( resultsArea );
@@ -238,7 +249,7 @@ public class SearchEngineProject
         maintenanceFrame.setLocation( 1040, 250 );
     }
     
-    public static String search( String searchText )
+    public static String search( String searchText, String searchType )
     {
         StringBuilder sb = new StringBuilder();
         HashSet<String> removeDoubles = new HashSet();
@@ -257,19 +268,85 @@ public class SearchEngineProject
         //Some kind of loop needs to be used to cycle through the array
         //containing each file pulled from the index, and if found, shown
         //in the text area on the seach frame
-        for( int i = 0; i < keys.length; ++i ) //this loop will run through each word in the array, testing it against the invertIndex keys
+        if( searchType.equals( "ALL" ) )
         {
-            if ( invertIndex.containsKey( keys[i] ) )
+            for( int i = 0; i < keys.length; ++i ) //this loop will run through each word in the array, testing it against the invertIndex keys
             {
-                ArrayList<Integer> intList = invertIndex.get( keys[i] );
-                
-                for( int j = 0; j < intList.size(); ++j )
+                if ( invertIndex.containsKey( keys[i] ) )
                 {
-                    //this should pull the appropriate index number pointing to a certain filename
-                    int find = intList.get( j );
-                    removeDoubles.add(indexData[ find ]);
+                    ArrayList<Integer> intList = invertIndex.get( keys[i] );
+
+                    for( int j = 0; j < intList.size(); ++j )
+                    {
+                        //this should pull the appropriate index number pointing to a certain filename
+                        int find = intList.get( j );
+                        removeDoubles.add(indexData[ find ]);
+                    }
                 }
             }
+        } else if ( searchType.equals( "ANY" ) )
+        {
+            //start with copy of the inverted index
+            ArrayList<Integer> fileSet = new ArrayList<>();
+            ArrayList<Integer> selectedFiles = new ArrayList<>();
+            for( int i = 0; i < indexNum; ++i ) //fill fileSet with numbers corresponding to indexed files
+            {
+                fileSet.add( i );
+            }
+            
+            System.out.println( fileSet + "= fileSet" );
+            
+            for( int i = 0; i < keys.length; ++i ) //runs through search terms entered by user
+            {
+                if ( invertIndex.containsKey( keys[i] ) )
+                {
+                    ArrayList<Integer> intList = new ArrayList<>( invertIndex.get( keys[i] ) );
+                    
+                    for( int j = 0; j < intList.size(); ++j ) //runs through the arraylist in the inverted index associated with that term
+                    {
+                        System.out.println( "current intList element: " + intList.get( j ) );
+                        /*for( int k = 0; k < fileSet.size(); ++k ) //finally, this runs through the fileSet, comparing stored values to the ones associated with the term
+                        {
+                        int compare1 = fileSet.get( k );
+                        int compare2 = intList.get( j );
+                        System.out.println( "current fileSet element: " + compare1 + " current intList element: " + compare2 );
+                        
+                        //this should compare the two numbers, determine if they are the same. if not, remove it from fileSet
+                        if( compare1 != compare2 )
+                        {
+                        System.out.println( "removing " + fileSet.get( k ) + " from fileSet" );
+                        fileSet.remove( k );
+                        System.out.println( "current fileSet elements: " + fileSet );
+                        }
+                        }*/
+                        int compare = intList.get( j );
+                        fileSet.removeIf((Integer x) -> {
+                            boolean remove = x == compare;
+                            if ( remove )
+                            {
+                                selectedFiles.add( x );
+                            }
+                            return remove;
+                        } );
+                    }
+                }
+                fileSet.clear();
+                fileSet.addAll( selectedFiles );
+                selectedFiles.clear();
+                System.out.println( "current fileSet elements: " + fileSet );
+            }
+            
+            //then run through the remaining numbers
+            for( int i = 0; i < fileSet.size(); ++i )
+            {
+                int find = 0;
+                find = fileSet.get( i );
+                removeDoubles.add(indexData[ find ]);
+            }
+        } else
+        {
+            //this will require altering the hashmap to contain both the files the words are contained in as well as their placement in the file
+            //this could possibly be accomplished by putting a second hashmap inside the hashmap
         }
         
         String[] reDubArray = new String[removeDoubles.size()];
@@ -422,7 +499,6 @@ public class SearchEngineProject
                 System.err.println( ex );
             }
         }
-        System.out.println( invertIndex );
     }
     
     public static void main( String[] args )
