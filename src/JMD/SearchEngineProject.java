@@ -270,19 +270,19 @@ public class SearchEngineProject
             {
                 if ( invertIndex.containsKey( keys[i] ) )
                 {
-                    ArrayList<Integer> intList = invertIndex.get( keys[i] );
+                    ArrayList<WordPos> intList = invertIndex.get( keys[i] );
 
                     for( int j = 0; j < intList.size(); ++j )
                     {
                         //this should pull the appropriate index number pointing to a certain filename
-                        int find = intList.get( j );
+                        WordPos findWord = intList.get( j );
+                        int find = findWord.getWord();
                         removeDoubles.add(indexData.get(find));
                     }
                 }
             }
         } else if ( searchType.equals( "ANY" ) )
         {
-            //start with copy of the inverted index
             ArrayList<Integer> fileSet = new ArrayList<>();
             ArrayList<Integer> selectedFiles = new ArrayList<>();
             for( int i = 0; i < indexNum; ++i ) //fill fileSet with numbers corresponding to indexed files
@@ -290,32 +290,17 @@ public class SearchEngineProject
                 fileSet.add( i );
             }
             
-            System.out.println( fileSet + "= fileSet" );
-            
             for( int i = 0; i < keys.length; ++i ) //runs through search terms entered by user
             {
                 if ( invertIndex.containsKey( keys[i] ) )
                 {
-                    ArrayList<Integer> intList = new ArrayList<>( invertIndex.get( keys[i] ) );
+                    ArrayList<WordPos> intList = new ArrayList<>( invertIndex.get( keys[i] ) );
                     
                     for( int j = 0; j < intList.size(); ++j ) //runs through the arraylist in the inverted index associated with that term
                     {
-                        System.out.println( "current intList element: " + intList.get( j ) );
-                        /*for( int k = 0; k < fileSet.size(); ++k ) //finally, this runs through the fileSet, comparing stored values to the ones associated with the term
-                        {
-                        int compare1 = fileSet.get( k );
-                        int compare2 = intList.get( j );
-                        System.out.println( "current fileSet element: " + compare1 + " current intList element: " + compare2 );
+                        WordPos findWord = intList.get( j );
                         
-                        //this should compare the two numbers, determine if they are the same. if not, remove it from fileSet
-                        if( compare1 != compare2 )
-                        {
-                        System.out.println( "removing " + fileSet.get( k ) + " from fileSet" );
-                        fileSet.remove( k );
-                        System.out.println( "current fileSet elements: " + fileSet );
-                        }
-                        }*/
-                        int compare = intList.get( j );
+                        int compare = findWord.getWord();
                         fileSet.removeIf((Integer x) -> {
                             boolean remove = x == compare;
                             if ( remove )
@@ -329,13 +314,12 @@ public class SearchEngineProject
                 fileSet.clear();
                 fileSet.addAll( selectedFiles );
                 selectedFiles.clear();
-                System.out.println( "current fileSet elements: " + fileSet );
             }
             
             //then run through the remaining numbers
             for( int i = 0; i < fileSet.size(); ++i )
             {
-                int find = 0;
+                int find;
                 find = fileSet.get( i );
                 removeDoubles.add(indexData.get(find));
             }
@@ -468,7 +452,6 @@ public class SearchEngineProject
         {
             try ( BufferedReader br = new BufferedReader( new FileReader( indexData.get(i) ) ) )
             {
-                System.out.println( indexData.get(i) );
                 String line;
                 while( ( line = br.readLine() ) != null )
                 {
@@ -480,12 +463,15 @@ public class SearchEngineProject
                     for( int j = 0; j < stringArray.length; ++j ) //"j" will track the position of the word being read
                     {
                         //int[] intArray = new int[ stringArray.length ];
-                        ArrayList<Integer> mapInts = new ArrayList<>();
+                        ArrayList<WordPos> mapInts = new ArrayList<>();
+                        
+                        
                         if( invertIndex.containsKey( stringArray[j] ) && !mapInts.equals( invertIndex.get( stringArray[j] ) ) )
                         {
                             mapInts.addAll( invertIndex.get( stringArray[j] ) );
                         }
-                        mapInts.add( i );
+                        WordPos wordPos = new WordPos( i, j );
+                        mapInts.add( wordPos );
                         invertIndex.put( stringArray[j], mapInts );
                     }
                 }
@@ -501,5 +487,26 @@ public class SearchEngineProject
     {
         maintenanceFrame();
         searchFrame();
+    }
+}
+
+class WordPos
+{
+    public final int word;
+    public final int pos;
+    
+    WordPos( int word, int pos )
+    {
+        this.word = word;
+        this.pos = pos;
+    }
+    
+    int getWord()
+    {
+        return word;
+    }
+    int getPos()
+    {
+        return pos;
     }
 }
