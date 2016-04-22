@@ -22,7 +22,7 @@ public class SearchEngineProject
   
     
     //Map used to contain the search string the user inputs
-    private static Map<String, ArrayList> invertIndex = new HashMap<>();
+    private static HashMap<String, ArrayList> invertIndex = new HashMap<>();
     
     private static ArrayList<String> indexData = new ArrayList<String>();
     private static ArrayList modData = new ArrayList();
@@ -80,7 +80,7 @@ public class SearchEngineProject
             if ( allRadio.isSelected() )
             {
                 searchType = "ALL";
-            } else
+            } else if ( anyRadio.isSelected() )
             {
                 searchType = "ANY";
             }
@@ -321,12 +321,49 @@ public class SearchEngineProject
             {
                 int find;
                 find = fileSet.get( i );
-                removeDoubles.add(indexData.get(find));
+                removeDoubles.add( indexData.get( find ) );
             }
         } else
         {
-            //this will require altering the hashmap to contain both the files the words are contained in as well as their placement in the file
-            //this could possibly be accomplished by putting a second hashmap inside the hashmap
+            //pull the set of { file, pos } pairs relating to the first search term from the inverted index
+            ArrayList<WordPos> initialFiles = new ArrayList<>();
+            ArrayList<WordPos> newIndex = new ArrayList<>();
+            if ( invertIndex.containsKey( keys[0] ) )
+            {
+                initialFiles = invertIndex.get( keys[0] );
+            }
+            
+            //loop through the remaining search terms
+            for( int i = 1; i < keys.length; ++i )
+            {
+                //loop through the set of pairs
+                if ( invertIndex.containsKey( keys[i] ) )
+                {
+                    for( int j = 0; j < initialFiles.size(); ++j )
+                    {
+                        ArrayList<WordPos> fileSet = invertIndex.get( keys[i] );
+                        //check if the word in the next position is the same as the current search term
+                        //maybe do this by pulling the current search term out of the inverted index and checking its array list for matches
+                        for( WordPos k : fileSet )
+                        {
+                            if( ( k.getWord() == initialFiles.get( j ).getWord() ) && ( k.getPos() == initialFiles.get( j ).getPos() + 1 ) )
+                            {
+                                //if so, add it to the list of pairs
+                                newIndex.add(k);
+                            }
+                        }
+                    }
+
+                    initialFiles = newIndex;
+                }
+            }
+            
+            for( int i = 0; i < initialFiles.size(); ++i )
+            {
+                int find;
+                find = initialFiles.get( i ).getWord();
+                removeDoubles.add( indexData.get( find ) );
+            }
         }
         
         String[] reDubArray = new String[removeDoubles.size()];
