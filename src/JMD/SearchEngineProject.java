@@ -6,7 +6,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
-import java.util.function.*;
 
 /*
  * Search engine project
@@ -22,14 +21,14 @@ public class SearchEngineProject
   
     
     //Map used to contain the search string the user inputs
-    private static HashMap<String, ArrayList> invertIndex = new HashMap<>();
+    private static final HashMap<String, ArrayList> invertIndex = new HashMap<>();
     
-    private static ArrayList<String> indexData = new ArrayList<String>();
-    private static ArrayList modData = new ArrayList();
-    private static ArrayList<String> fileContent = new ArrayList<String>();
+    private static final ArrayList<String> indexData = new ArrayList<String>();
+    private static final ArrayList modData = new ArrayList();
+    private static final ArrayList<String> fileContent = new ArrayList<String>();
     
-    private static JFrame searchFrame = new JFrame( "Search engine" );
-    private static JFrame maintenanceFrame = new JFrame( "Maintenance" );
+    private static final JFrame searchFrame = new JFrame( "Search engine" );
+    private static final JFrame maintenanceFrame = new JFrame( "Maintenance" );
     
     public static void searchFrame()
     {
@@ -152,7 +151,6 @@ public class SearchEngineProject
         versionLabel = new JLabel();
         JButton addButton = new JButton("Add File");
         JButton removeButton = new JButton("Remove File");
-        JButton rebuildButton = new JButton("Rebuild Out-of-date");
         JButton repositionButton = new JButton("Reset Window Position");
         JPanel contentPane = new JPanel();
         contentPane.setLayout( new BoxLayout( contentPane, BoxLayout.Y_AXIS ) );
@@ -211,17 +209,11 @@ public class SearchEngineProject
                 updateLabel( indexedLabel );
                 writeFile();
             }
-        });
-        
-        rebuildButton.addActionListener((ActionEvent ae) ->
-        {
-            rebuild();
-        });
+        });        
         
         JPanel panel2 = new JPanel();
         panel2.add( addButton );
         panel2.add( removeButton );
-        panel2.add( rebuildButton );
         contentPane.add( panel2 );
         
         JPanel panel3 = new JPanel();
@@ -255,15 +247,7 @@ public class SearchEngineProject
         searchText = searchText.toLowerCase();
         //split it individual words, separated by spaces, and put each word into an array
         String[] keys = searchText.split( " " );
-        
-        //Selection statement used to determine which radio was pushed
-        
-        //Once the radio button is determined, one of the three search types
-        //is performed
-        
-        //Some kind of loop needs to be used to cycle through the array
-        //containing each file pulled from the index, and if found, shown
-        //in the text area on the seach frame
+
         if( searchType.equals( "ALL" ) )
         {
             for( int i = 0; i < keys.length; ++i ) //this loop will run through each word in the array, testing it against the invertIndex keys
@@ -395,7 +379,6 @@ public class SearchEngineProject
             //Only return filename if a file is selected and valid
             if ( file.isFile() )
             {
-                //Changed to adjust for arraylist
                 indexData.add(indexNum,filename); // + " ; " + lastMod;
                 return indexItem;
             }
@@ -417,13 +400,6 @@ public class SearchEngineProject
         indexData.add(indexNum,"");
         modData.add(indexNum, 0);
         manageFileContent();
-        //Changed to adjust for arraylist
-        //indexData.remove(indexNum);
-        //modData.remove(indexNum);
-    }
-    
-    public static void rebuild()
-    {
     }
     
     public static void writeFile()
@@ -433,8 +409,6 @@ public class SearchEngineProject
         {
             for( int i = 0; i <= indexNum; ++i )
             {
-                //Changed to adjust for arraylist
-                //boolean check = indexData.isEmpty();
                 if( !indexData.get(i).isEmpty() )
                 {
                     bw.append( indexData.get(i) + " ; " + modData.get(i) );
